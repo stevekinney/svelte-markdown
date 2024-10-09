@@ -27,3 +27,23 @@ const config = {
 
 export default config;
 ```
+
+## Example
+
+Components will be rendered with a `class` prop that can be passed in as well as `metadata` from the YAML frontmatter.
+
+```html
+<script context="module">
+  export const metadata = { title: 'A Frontmatter Title' };
+</script>
+
+<script>
+  let className = '';
+  export { className as class };
+</script>
+
+<div data-markdown class="{className}">
+  <h1>Heading</h1>
+  <p>Some content</p>
+</div>
+```
