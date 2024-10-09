@@ -11,7 +11,7 @@ import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // Import the preprocessor.
-import { svelteMarkdown } from 'svelte-markdown';
+import { svelteMarkdown } from 'svelte-markdown-component';
 
 const config = {
   // Add support `.md` files.
