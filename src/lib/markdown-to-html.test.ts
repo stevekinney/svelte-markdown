@@ -20,11 +20,12 @@ it('processes Markdown', async () => {
     <script>
       let className = "";
       export { className as class };
+      export let as = "div";
     </script>
-    <div data-markdown class="{className}">
+    <svelte:element this="{as}" data-markdown class="{className}">
       <h1>Heading</h1>
       <p>Some content</p>
-    </div>
+    </svelte:element>
     "
   `);
 });

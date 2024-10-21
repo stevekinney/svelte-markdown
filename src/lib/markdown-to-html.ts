@@ -20,6 +20,7 @@ const getScript = async () => {
     <script>
       let className = '';
       export { className as class };
+      export let as = 'div';
     </script>
   `);
 };
@@ -40,7 +41,9 @@ const toHTML = async (content: string) => {
     .use(rehypeStringify)
     .process(content);
 
-  return format(`<div data-markdown class={className}>${markup}</div>`);
+  return format(
+    `<svelte:element this={as} data-markdown class={className}>\n\t${markup}\n</svelte:element>`,
+  );
 };
 
 export const processMarkdown = async ({
