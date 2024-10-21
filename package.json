@@ -1,5 +1,5 @@
 {
-  "name": "svelte-markdown",
+  "name": "svelte-markdown-component",
   "version": "0.0.3",
   "scripts": {
     "dev": "vite dev",
@@ -25,7 +25,7 @@
     "!dist/**/*.spec.*"
   ],
   "peerDependencies": {
-    "svelte": "^5.0.0-next.1"
+    "svelte": "*"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",
