@@ -19,7 +19,12 @@ const getFronmatter = (content: string) => {
 const getScript = async () => {
   return format(`
     <script>
-      const { 
+      const {
+        /**
+         * The tag name of the markdown container
+         * @type {keyof import('svelte/elements').SvelteHTMLElements}
+         * */
+        as? = 'div',
         /**
          * Classes that you can apply to the markdown container
          * @type {string | undefined}
@@ -61,7 +66,9 @@ const toHTML = async (content: string) => {
     .use(rehypeStringify)
     .process(content);
 
-  return format(`<div data-markdown class={className} {...props}>${markup}</div>`);
+  return format(
+    `<svelte:element this={as} data-markdown class={className} {...props}>${markup}</svelte:element>`,
+  );
 };
 
 const prepend = (result: MagicString, content: string) => {
