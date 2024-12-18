@@ -46,7 +46,7 @@ it('processes Markdown', async () => {
     <div data-markdown class="{className}" {...props}>
       <h1>Heading</h1>
       <p>Some content</p>
-    </div>
+    </svelte:element>
     "
   `);
 });
