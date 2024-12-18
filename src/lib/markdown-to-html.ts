@@ -1,12 +1,13 @@
 import { parse, type Processed } from 'svelte/compiler';
+
+import matter from 'gray-matter';
 import MagicString from 'magic-string';
+import prettier from 'prettier';
+import remarkFrontmatter from 'remark-frontmatter';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import { unified } from 'unified';
-import remarkFrontmatter from 'remark-frontmatter';
-import matter from 'gray-matter';
-import prettier from 'prettier';
 
 const format = (code: string) => prettier.format(code, { parser: 'html' });
 
@@ -18,15 +19,35 @@ const getFronmatter = (content: string) => {
 const getScript = async () => {
   return format(`
     <script>
-      let className = '';
-      export { className as class };
+      const { 
+        /**
+         * Classes that you can apply to the markdown container
+         * @type {string | undefined}
+         * */
+        class: className = '',
+        /**
+         * Any other props you want to pass to the markdown container
+         * @type {import('svelte/elements').HTMLAttributes}
+         */
+        ...props
+      } = $props();
     </script>
   `);
 };
 
-const toExports = async (data: Record<string, unknown>) => {
+const toExports = async (data: Record<string, unknown> = {}, filename: string | undefined) => {
   return format(`
-    <script context="module">
+    <script module>
+      /**
+       * The name of the Markdown file.
+       * @type {string | undefined}
+       */
+      export const filename = ${filename};
+
+      /**
+       * Any frontmatter data from the Markdown file.
+       * @type {Record<string, unknown>}
+       */
       export const metadata = ${JSON.stringify(data)};
     </script>
   `);
@@ -40,7 +61,11 @@ const toHTML = async (content: string) => {
     .use(rehypeStringify)
     .process(content);
 
-  return format(`<div data-markdown class={className}>${markup}</div>`);
+  return format(`<div data-markdown class={className} {...props}>${markup}</div>`);
+};
+
+const prepend = (result: MagicString, content: string) => {
+  result.prepend(content + '\n');
 };
 
 export const processMarkdown = async ({
@@ -51,19 +76,17 @@ export const processMarkdown = async ({
   filename?: string;
 }): Promise<Processed> => {
   const result = new MagicString(content);
+
   const { html } = parse(content);
   const { start, end } = html;
 
   const metadata = getFronmatter(content);
-
   const markup = await toHTML(content.slice(start, end));
+
   result.update(start, end, String(markup));
 
-  result.prepend(await getScript());
-
-  if (metadata) {
-    result.prepend(await toExports(metadata));
-  }
+  prepend(result, await getScript());
+  prepend(result, await toExports(metadata, filename));
 
   const code = result.toString();
   const map = result.generateMap({ source: filename, hires: true });

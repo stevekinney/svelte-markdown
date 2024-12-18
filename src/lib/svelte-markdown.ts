@@ -7,21 +7,22 @@ export type SvelteMarkdownPluginOptions = {
   extensions?: string | string[];
 };
 
-export const svelteMarkdown = ({
+type SvelteFile = {
+  content: string;
+  filename?: string;
+};
+
+export const markdown = ({
   extensions = ['.md'],
 }: SvelteMarkdownPluginOptions = {}): PreprocessorGroup => {
   return {
     name: 'svelte-markdown',
-    markup({
-      content,
-      filename,
-    }: {
-      content: string;
-      filename?: string;
-    }): Promise<Processed> | void {
+    markup({ content, filename }: SvelteFile): Promise<Processed> | void {
       if (matchesExtension(filename, extensions)) {
         return processMarkdown({ content, filename });
       }
     },
   };
 };
+
+export default markdown;
